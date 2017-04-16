@@ -1,19 +1,33 @@
-assignments = []
+ASSIGNMENTS = []
 
-rows = 'ABCDEFGHI'
+ROWS = 'ABCDEFGHI'
 cols = '123456789'
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     return [s+t for s in A for t in B]
 
-boxes = cross(rows, cols)
-row_units = [cross(r, cols) for r in rows]
-column_units = [cross(rows, c) for c in cols]
-square_units = [cross(rs, cs) for rs in ('ABC','DEF','GHI') for cs in ('123','456','789')]
-unitlist = row_units + column_units + square_units
+boxes = cross(ROWS, cols)
+row_units = [cross(r, cols) for r in ROWS]
+column_units = [cross(ROWS, c) for c in cols]
+square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
+
+"""
+The approach for solving diagonal sudoku involves adding the two diagonals to the list of
+units that are already being checked when the puzzle is being solved. We create two arrays
+in a list that represents the two diagonals and add that to the unit lists.
+"""
+diag1 = []
+diag2 = []
+for ch in range(0, 9):
+    diag1.append(ROWS[ch] + cols[ch])
+    diag2.append(ROWS[ch] + cols[len(cols)-ch-1])
+diagonal_units = [diag1, diag2]
+
+# In addition to row, column and squares, diagonals have also been added to list of units
+unitlist = row_units + column_units + square_units + diagonal_units
 units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
-peers = dict((s, set(sum(units[s],[]))-set([s])) for s in boxes)
+peers = dict((s, set(sum(units[s], []))-set([s])) for s in boxes)
 
 def assign_value(values, box, value):
     """
@@ -27,11 +41,12 @@ def assign_value(values, box, value):
 
     values[box] = value
     if len(value) == 1:
-        assignments.append(values.copy())
+        ASSIGNMENTS.append(values.copy())
     return values
 
 def naked_twins(values):
-    """Eliminate values using the naked twins strategy.
+    """
+    Eliminate values using the naked twins strategy.
     Args:
         values(dict): a dictionary of the form {'box_name': '123456789', ...}
 
@@ -39,10 +54,25 @@ def naked_twins(values):
         the values dictionary with the naked twins eliminated from peers.
     """
 
+    """
+    Naked twins are identified by any two boxes in a unit that contains the same two
+    possibilities. This means that any other boxes that have those same possibilities can
+    be eliminated. To start with, we iterate through the each of the units.
+    """
     for boxes in unitlist:
+        # This maintains the mapping of value to count of occurrences within a unit
         twins = {}
-        twin_boxes = {} 
 
+        # This maintains the box to value mapping
+        twin_boxes = {}
+
+        """
+        We attempt to find the naked twins in three passes of the boxes of a unit
+        In the first pass, we iterate through all the boxes looking for values of
+        length 2 and for each that we find, we add it to the twins hash, keyed by the
+        value along with incrementing the number of times that the value appeared in
+        the hash
+        """
         for box in boxes:
             val = values[box]
             if len(values[box]) == 2:
@@ -50,12 +80,22 @@ def naked_twins(values):
                     twins[val] = 0
                 twins[val] = twins[val] + 1
 
+        """
+        We now iterate through the twins hash, and for each item with a count of 2,
+        we scan through the boxes once again to identify the box number and add that
+        to a twin_boxes hash.
+        """
         for val, count in twins.items():
             if count == 2:
                 for box in boxes:
                     if values[box] == val:
                         twin_boxes[box] = val
 
+        """
+        In the final step, we iterate through the boxes of the unit, and for each
+        occurrence of a naked twin that doesn't exist in the twin_boxes hash, we
+        eliminate the values of the twin
+        """
         for twin, twinval in twin_boxes.items():
             for box in boxes:
                 if box not in twin_boxes:
@@ -63,9 +103,6 @@ def naked_twins(values):
                         assign_value(values, box, values[box].replace(ch, ''))
 
     return values
-
-    # Find all instances of naked twins
-    # Eliminate the naked twins as possibilities for their peers
 
 def grid_values(grid):
     """
@@ -75,7 +112,8 @@ def grid_values(grid):
     Returns:
         A grid in dictionary form
             Keys: The boxes, e.g., 'A1'
-            Values: The value in each box, e.g., '8'. If the box has no value, then the value will be '123456789'.
+            Values: The value in each box, e.g., '8'. If the box has no value,
+                    then the value will be '123456789'.
     """
     grid = dict(zip(boxes, grid))
     for key, value in grid.items():
@@ -91,7 +129,7 @@ def display(values):
     """
     width = 1+max(len(values[s]) for s in boxes)
     line = '+'.join(['-'*(width*3)]*3)
-    for r in rows:
+    for r in ROWS:
         print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
                       for c in cols))
         if r in 'CF': print(line)
@@ -163,9 +201,9 @@ def search(values):
         return values
 
     # Choose one of the unfilled squares with the fewest possibilities
-    n,s = min((len(values[s]), s) for s in boxes if len(values[s]) > 1)
+    n, s = min((len(values[s]), s) for s in boxes if len(values[s]) > 1)
 
-    # Now use recurrence to solve each one of the resulting sudokus, and 
+    # Now use recurrence to solve each one of the resulting sudokus, and
     for value in values[s]:
         new_sudoku = values.copy()
         new_sudoku[s] = value
@@ -182,21 +220,20 @@ def solve(grid):
     Returns:
         The dictionary representation of the final sudoku grid. False if no solution exists.
     """
+
+    # Convert the string representation to a dictionary
     values = grid_values(grid)
-    for box, value in values.items():
-        assign_value(values, box, value)
+
+    # Invoke the search method and return the solved grid
     return search(values)
 
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
     display(solve(diag_sudoku_grid))
 
-    # TODO: remove before submission
-    exit()
-
     try:
         from visualize import visualize_assignments
-        visualize_assignments(assignments)
+        visualize_assignments(ASSIGNMENTS)
 
     except SystemExit:
         pass
