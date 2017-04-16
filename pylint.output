@@ -1,0 +1,119 @@
+************* Module solution
+C:212, 0: Line too long (104/100) (line-too-long)
+C:223, 0: Line too long (106/100) (line-too-long)
+C:233, 0: Line too long (113/100) (line-too-long)
+C:  1, 0: Missing module docstring (missing-docstring)
+C:  6, 0: Invalid argument name "A" (invalid-name)
+C:  6, 0: Invalid argument name "B" (invalid-name)
+C:120, 8: Invalid variable name "r" (invalid-name)
+C:131,16: Invalid variable name "pr" (invalid-name)
+W:142,12: Redefining name 'i' from outer scope (line 22) (redefined-outer-name)
+C:145,16: Invalid variable name "ch" (invalid-name)
+C:149,20: Invalid variable name "ch" (invalid-name)
+E:193,15: Instance of 'bool' has no 'values' member (no-member)
+E:204,22: Instance of 'bool' has no 'copy' member (no-member)
+C:223, 4: Invalid constant name "diag_sudoku_grid" (invalid-name)
+W:232, 4: No exception type(s) specified (bare-except)
+
+
+Report
+======
+123 statements analysed.
+
+Statistics by type
+------------------
+
++---------+-------+-----------+-----------+------------+---------+
+|type     |number |old number |difference |%documented |%badname |
++=========+=======+===========+===========+============+=========+
+|module   |1      |1          |=          |0.00        |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+|class    |0      |0          |=          |0           |0        |
++---------+-------+-----------+-----------+------------+---------+
+|method   |0      |0          |=          |0           |0        |
++---------+-------+-----------+-----------+------------+---------+
+|function |10     |10         |=          |100.00      |0.00     |
++---------+-------+-----------+-----------+------------+---------+
+
+
+
+External dependencies
+---------------------
+::
+
+    visualize (solution)
+
+
+
+Raw metrics
+-----------
+
++----------+-------+------+---------+-----------+
+|type      |number |%     |previous |difference |
++==========+=======+======+=========+===========+
+|code      |124    |52.77 |124      |=          |
++----------+-------+------+---------+-----------+
+|docstring |44     |18.72 |44       |=          |
++----------+-------+------+---------+-----------+
+|comment   |29     |12.34 |29       |=          |
++----------+-------+------+---------+-----------+
+|empty     |38     |16.17 |38       |=          |
++----------+-------+------+---------+-----------+
+
+
+
+Duplication
+-----------
+
++-------------------------+------+---------+-----------+
+|                         |now   |previous |difference |
++=========================+======+=========+===========+
+|nb duplicated lines      |0     |0        |=          |
++-------------------------+------+---------+-----------+
+|percent duplicated lines |0.000 |0.000    |=          |
++-------------------------+------+---------+-----------+
+
+
+
+Messages by category
+--------------------
+
++-----------+-------+---------+-----------+
+|type       |number |previous |difference |
++===========+=======+=========+===========+
+|convention |11     |11       |=          |
++-----------+-------+---------+-----------+
+|refactor   |0      |0        |=          |
++-----------+-------+---------+-----------+
+|warning    |2      |2        |=          |
++-----------+-------+---------+-----------+
+|error      |2      |2        |=          |
++-----------+-------+---------+-----------+
+
+
+
+Messages
+--------
+
++---------------------+------------+
+|message id           |occurrences |
++=====================+============+
+|invalid-name         |7           |
++---------------------+------------+
+|line-too-long        |3           |
++---------------------+------------+
+|no-member            |2           |
++---------------------+------------+
+|redefined-outer-name |1           |
++---------------------+------------+
+|missing-docstring    |1           |
++---------------------+------------+
+|bare-except          |1           |
++---------------------+------------+
+
+
+
+Global evaluation
+-----------------
+Your code has been rated at 8.13/10 (previous run: 8.13/10, +0.00)
+

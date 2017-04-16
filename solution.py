@@ -64,13 +64,11 @@ def naked_twins(values):
         # This maintains the box to value mapping
         twin_boxes = {}
 
-        """
-        We attempt to find the naked twins in three passes of the boxes of a unit
-        In the first pass, we iterate through all the boxes looking for values of
-        length 2 and for each that we find, we add it to the twins hash, keyed by the
-        value along with incrementing the number of times that the value appeared in
-        the hash
-        """
+        # We attempt to find the naked twins in three passes of the boxes of a unit
+        # In the first pass, we iterate through all the boxes looking for values of
+        # length 2 and for each that we find, we add it to the twins hash, keyed by the
+        #value along with incrementing the number of times that the value appeared in
+        # the hash
         for box in bxs:
             val = values[box]
             if len(values[box]) == 2:
@@ -78,41 +76,35 @@ def naked_twins(values):
                     twins[val] = 0
                 twins[val] = twins[val] + 1
 
-        """
-        We now iterate through the twins hash, and for each item with a count of 2,
-        we scan through the boxes once again to identify the box number and add that
-        to a twin_boxes hash.
-        """
+        # We now iterate through the twins hash, and for each item with a count of 2,
+        # we scan through the boxes once again to identify the box number and add that
+        # to a twin_boxes hash.
         for val, count in twins.items():
             if count == 2:
                 for box in bxs:
                     if values[box] == val:
                         twin_boxes[box] = val
 
-        """
-        In the final step, we iterate through the boxes of the unit, and for each
-        occurrence of a naked twin that doesn't exist in the twin_boxes hash, we
-        eliminate the values of the twin
-        """
-        for twin, twinval in twin_boxes.items():
+        # In the final step, we iterate through the boxes of the unit, and for each
+        # occurrence of a naked twin that doesn't exist in the twin_boxes hash, we
+        # eliminate the values of the twin
+        for twinval in twin_boxes.values():
             for box in bxs:
-                if box not in twin_boxes:
+                if box not in twin_boxes.keys():
                     for j in twinval:
                         assign_value(values, box, values[box].replace(j, ''))
 
     return values
 
 def grid_values(grid):
-    """
-    Convert grid into a dict of {square: char} with '123456789' for empties.
+    """Convert grid into a dict of {square: char} with '123456789' for empties.
     Args:
         grid(string) - A grid in string form.
     Returns:
         A grid in dictionary form
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value,
-                    then the value will be '123456789'.
-    """
+                    then the value will be '123456789'."""
     grid = dict(zip(BOXES, grid))
     for key, value in grid.items():
         if value == '.':
@@ -120,20 +112,19 @@ def grid_values(grid):
     return grid
 
 def display(values):
-    """
-    Display the values as a 2-D grid.
+    """Display the values as a 2-D grid.
     Args:
-        values(dict): The sudoku in dictionary form
-    """
+        values(dict): The sudoku in dictionary form"""
     width = 1+max(len(values[s]) for s in BOXES)
     line = '+'.join(['-'*(width*3)]*3)
     for r in ROWS:
-        print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
-                      for c in COLS))
-        if r in 'CF': print(line)
+        print(''.join(values[r+c].center(width)+('|' if c in '36' else '') for c in COLS))
+        if r in 'CF':
+            print(line)
     return
 
 def eliminate(values):
+    "Eliminate single digit values from all of the peers"
     for box, value in values.items():
         if len(value) == 1:
             prs = PEERS[box]
@@ -142,8 +133,9 @@ def eliminate(values):
                     assign_value(values, pr, values[pr].replace(value, ''))
     return values
 
-
 def only_choice(values):
+    """Determine and set the only possible value for a box in a given unit
+       if no other box has that possibility"""
     count = {}
     for unit in UNITLIST:
         for i in range(1, 10):
@@ -159,19 +151,20 @@ def only_choice(values):
     return values
 
 def reduce_puzzle(values):
+    "Use multiple strategies to eliminate possibilities"
     stalled = False
     while not stalled:
         # Check how many boxes have a determined value
         solved_values_before = len([box for box in values.keys() if len(values[box]) == 1])
 
-        # Your code here: Use the Eliminate Strategy
+        # Use the eliminate strategy
         values = eliminate(values)
 
-        # Implement naked twin exclusion rule
-        values = naked_twins(values)
-
-        # Your code here: Use the Only Choice Strategy
+        # Use the only choice strategy
         values = only_choice(values)
+
+        # Use the naked twin exclusion strategy
+        values = naked_twins(values)
 
         # Check how many boxes have a determined value, to compare
         solved_values_after = len([box for box in values.keys() if len(values[box]) == 1])
@@ -185,12 +178,16 @@ def reduce_puzzle(values):
     return values
 
 def search(values):
+    "Perform a depth first search of all possibilities to solve the puzzle"
+
     # First, reduce the puzzle using the previous function
     values = reduce_puzzle(values)
 
+    # Check if the return value is false and propagate that up the stack
     if values is False:
         return False
 
+    # Check if all of the boxes have been filled and if so, we're done
     complete = True
     for val in values.values():
         if len(val) > 1:
@@ -199,25 +196,21 @@ def search(values):
         return values
 
     # Choose one of the unfilled squares with the fewest possibilities
-    n, s = min((len(values[s]), s) for s in BOXES if len(values[s]) > 1)
+    smallest = min((len(values[s]), s) for s in BOXES if len(values[s]) > 1)
 
-    # Now use recurrence to solve each one of the resulting sudokus, and
-    for value in values[s]:
-        new_sudoku = values.copy()
-        new_sudoku[s] = value
-        attempt = search(new_sudoku)
-        if attempt:
-            return attempt
+    # Now use recurrence to solve each one of the resulting sudokus
+    for value in values[smallest]:
+        values_copy = values.copy()
+        values_copy[smallest] = value
+        return search(values_copy)
 
 def solve(grid):
-    """
-    Find the solution to a Sudoku grid.
+    """Find the solution to a Sudoku grid.
     Args:
         grid(string): a string representing a sudoku grid.
             Example: '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
     Returns:
-        The dictionary representation of the final sudoku grid. False if no solution exists.
-    """
+        The dictionary representation of the final sudoku grid. False if no solution exists."""
 
     # Convert the string representation to a dictionary
     values = grid_values(grid)
