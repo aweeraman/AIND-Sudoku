@@ -39,6 +39,31 @@ def naked_twins(values):
         the values dictionary with the naked twins eliminated from peers.
     """
 
+    for boxes in unitlist:
+        twins = {}
+        twin_boxes = {} 
+
+        for box in boxes:
+            val = values[box]
+            if len(values[box]) == 2:
+                if val not in twins.keys():
+                    twins[val] = 0
+                twins[val] = twins[val] + 1
+
+        for val, count in twins.items():
+            if count == 2:
+                for box in boxes:
+                    if values[box] == val:
+                        twin_boxes[box] = val
+
+        for twin, twinval in twin_boxes.items():
+            for box in boxes:
+                if box not in twin_boxes:
+                    for ch in twinval:
+                        assign_value(values, box, values[box].replace(ch, ''))
+
+    return values
+
     # Find all instances of naked twins
     # Eliminate the naked twins as possibilities for their peers
 
@@ -106,6 +131,9 @@ def reduce_puzzle(values):
         # Your code here: Use the Eliminate Strategy
         values = eliminate(values)
 
+        # Implement naked twin exclusion rule
+        values = naked_twins(values)
+
         # Your code here: Use the Only Choice Strategy
         values = only_choice(values)
 
@@ -162,6 +190,9 @@ def solve(grid):
 if __name__ == '__main__':
     diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
     display(solve(diag_sudoku_grid))
+
+    # TODO: remove before submission
+    exit()
 
     try:
         from visualize import visualize_assignments
