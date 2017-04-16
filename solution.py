@@ -1,33 +1,33 @@
 ASSIGNMENTS = []
 
 ROWS = 'ABCDEFGHI'
-cols = '123456789'
+COLS = '123456789'
 
 def cross(A, B):
     "Cross product of elements in A and elements in B."
     return [s+t for s in A for t in B]
 
-boxes = cross(ROWS, cols)
-row_units = [cross(r, cols) for r in ROWS]
-column_units = [cross(ROWS, c) for c in cols]
-square_units = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
+BOXES = cross(ROWS, COLS)
+ROW_UNITS = [cross(r, COLS) for r in ROWS]
+COLUMN_UNITS = [cross(ROWS, c) for c in COLS]
+SQUARE_UNITS = [cross(rs, cs) for rs in ('ABC', 'DEF', 'GHI') for cs in ('123', '456', '789')]
 
 """
 The approach for solving diagonal sudoku involves adding the two diagonals to the list of
 units that are already being checked when the puzzle is being solved. We create two arrays
 in a list that represents the two diagonals and add that to the unit lists.
 """
-diag1 = []
-diag2 = []
-for ch in range(0, 9):
-    diag1.append(ROWS[ch] + cols[ch])
-    diag2.append(ROWS[ch] + cols[len(cols)-ch-1])
-diagonal_units = [diag1, diag2]
+DIAG1 = []
+DIAG2 = []
+for i in range(0, 9):
+    DIAG1.append(ROWS[i] + COLS[i])
+    DIAG2.append(ROWS[i] + COLS[len(COLS)-i-1])
+DIAGONAL_UNITS = [DIAG1, DIAG2]
 
 # In addition to row, column and squares, diagonals have also been added to list of units
-unitlist = row_units + column_units + square_units + diagonal_units
-units = dict((s, [u for u in unitlist if s in u]) for s in boxes)
-peers = dict((s, set(sum(units[s], []))-set([s])) for s in boxes)
+UNITLIST = ROW_UNITS + COLUMN_UNITS + SQUARE_UNITS + DIAGONAL_UNITS
+UNITS = dict((s, [u for u in UNITLIST if s in u]) for s in BOXES)
+PEERS = dict((s, set(sum(UNITS[s], []))-set([s])) for s in BOXES)
 
 def assign_value(values, box, value):
     """
@@ -52,14 +52,12 @@ def naked_twins(values):
 
     Returns:
         the values dictionary with the naked twins eliminated from peers.
-    """
 
-    """
     Naked twins are identified by any two boxes in a unit that contains the same two
     possibilities. This means that any other boxes that have those same possibilities can
     be eliminated. To start with, we iterate through the each of the units.
     """
-    for boxes in unitlist:
+    for bxs in UNITLIST:
         # This maintains the mapping of value to count of occurrences within a unit
         twins = {}
 
@@ -73,7 +71,7 @@ def naked_twins(values):
         value along with incrementing the number of times that the value appeared in
         the hash
         """
-        for box in boxes:
+        for box in bxs:
             val = values[box]
             if len(values[box]) == 2:
                 if val not in twins.keys():
@@ -87,7 +85,7 @@ def naked_twins(values):
         """
         for val, count in twins.items():
             if count == 2:
-                for box in boxes:
+                for box in bxs:
                     if values[box] == val:
                         twin_boxes[box] = val
 
@@ -97,10 +95,10 @@ def naked_twins(values):
         eliminate the values of the twin
         """
         for twin, twinval in twin_boxes.items():
-            for box in boxes:
+            for box in bxs:
                 if box not in twin_boxes:
-                    for ch in twinval:
-                        assign_value(values, box, values[box].replace(ch, ''))
+                    for j in twinval:
+                        assign_value(values, box, values[box].replace(j, ''))
 
     return values
 
@@ -115,7 +113,7 @@ def grid_values(grid):
             Values: The value in each box, e.g., '8'. If the box has no value,
                     then the value will be '123456789'.
     """
-    grid = dict(zip(boxes, grid))
+    grid = dict(zip(BOXES, grid))
     for key, value in grid.items():
         if value == '.':
             grid[key] = '123456789'
@@ -127,18 +125,18 @@ def display(values):
     Args:
         values(dict): The sudoku in dictionary form
     """
-    width = 1+max(len(values[s]) for s in boxes)
+    width = 1+max(len(values[s]) for s in BOXES)
     line = '+'.join(['-'*(width*3)]*3)
     for r in ROWS:
         print(''.join(values[r+c].center(width)+('|' if c in '36' else '')
-                      for c in cols))
+                      for c in COLS))
         if r in 'CF': print(line)
     return
 
 def eliminate(values):
     for box, value in values.items():
         if len(value) == 1:
-            prs = peers[box]
+            prs = PEERS[box]
             for pr in prs:
                 if len(values[pr]) != 1:
                     assign_value(values, pr, values[pr].replace(value, ''))
@@ -147,7 +145,7 @@ def eliminate(values):
 
 def only_choice(values):
     count = {}
-    for unit in unitlist:
+    for unit in UNITLIST:
         for i in range(1, 10):
             count[str(i)] = 0
         for box in unit:
@@ -201,7 +199,7 @@ def search(values):
         return values
 
     # Choose one of the unfilled squares with the fewest possibilities
-    n, s = min((len(values[s]), s) for s in boxes if len(values[s]) > 1)
+    n, s = min((len(values[s]), s) for s in BOXES if len(values[s]) > 1)
 
     # Now use recurrence to solve each one of the resulting sudokus, and
     for value in values[s]:
