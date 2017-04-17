@@ -17,11 +17,8 @@ The approach for solving diagonal sudoku involves adding the two diagonals to th
 units that are already being checked when the puzzle is being solved. We create two arrays
 in a list that represents the two diagonals and add that to the unit lists.
 """
-DIAG1 = []
-DIAG2 = []
-for i in range(0, 9):
-    DIAG1.append(ROWS[i] + COLS[i])
-    DIAG2.append(ROWS[i] + COLS[-1-i])
+DIAG1 = [ROWS[row] + COLS[row] for row in range(len(ROWS))]
+DIAG2 = [ROWS[row] + COLS[::-1][row] for row in range(len(ROWS))]
 DIAGONAL_UNITS = [DIAG1, DIAG2]
 
 # In addition to row, column and squares, diagonals have also been added to list of units
@@ -218,7 +215,9 @@ def solve(grid):
     values = grid_values(grid)
 
     # Invoke the search method and return the solved grid
-    return search(values)
+    values = search(values)
+
+    return values
 
 if __name__ == '__main__':
     diag_sudoku_grid = '9.1....8.8.5.7..4.2.4....6...7......5..............83.3..6......9................'
