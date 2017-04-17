@@ -21,7 +21,7 @@ DIAG1 = []
 DIAG2 = []
 for i in range(0, 9):
     DIAG1.append(ROWS[i] + COLS[i])
-    DIAG2.append(ROWS[i] + COLS[len(COLS)-i-1])
+    DIAG2.append(ROWS[i] + COLS[-1-i])
 DIAGONAL_UNITS = [DIAG1, DIAG2]
 
 # In addition to row, column and squares, diagonals have also been added to list of units
