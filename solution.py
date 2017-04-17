@@ -196,13 +196,15 @@ def search(values):
         return values
 
     # Choose one of the unfilled squares with the fewest possibilities
-    smallest = min((len(values[s]), s) for s in BOXES if len(values[s]) > 1)
+    n, smallest = min((len(values[s]), s) for s in BOXES if len(values[s]) > 1)
 
     # Now use recurrence to solve each one of the resulting sudokus
     for value in values[smallest]:
         values_copy = values.copy()
         values_copy[smallest] = value
-        return search(values_copy)
+        solution = search(values_copy)
+        if solution:
+            return solution
 
 def solve(grid):
     """Find the solution to a Sudoku grid.
@@ -219,7 +221,8 @@ def solve(grid):
     return search(values)
 
 if __name__ == '__main__':
-    diag_sudoku_grid = '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
+    diag_sudoku_grid = '9.1....8.8.5.7..4.2.4....6...7......5..............83.3..6......9................'
+
     display(solve(diag_sudoku_grid))
 
     try:
