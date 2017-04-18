@@ -3,11 +3,11 @@
 
 # Question 1 (Naked Twins)
 Q: How do we use constraint propagation to solve the naked twins problem?  
-A: Elimination of the naked twins is implemented as an additional rule that can be chained with other rules such as elimination based on the values of the peers and the only choice strategy. The implementation involves making three passes on the boxes in each individual unit to identify the twins and remove them from the unit. This constraint is propagated as the solver recursively traverses the graph looking for elimination opportunities.
+A: Elimination of the naked twins is implemented as a rule that can be chained with other rules such as elimination based on the values of the peers and the only choice strategy, each of which checks the peers and units for digits that can be eliminated based on the rules of sudoku. This constraint is propagated as the solver recursively traverses the graph looking for elimination opportunities.
 
 # Question 2 (Diagonal Sudoku)
 Q: How do we use constraint propagation to solve the diagonal sudoku problem?  
-A: Implementing this involved adding the diagonal to the list of units such that the diagonal constraint gets propagated as the solver recursively checks for elimination rules.
+A: We use the same method of constraint propagation as used in the implementation of the naked twins exclusion rule with the addition of new units to represent the two diagonals. This way, the diagonal constraint gets propagated as the solver recursively checks for elimination rules.
 
 ### Install
 

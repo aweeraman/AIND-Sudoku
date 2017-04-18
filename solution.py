@@ -1,4 +1,4 @@
-ASSIGNMENTS = []
+assignments = []
 
 ROWS = 'ABCDEFGHI'
 COLS = '123456789'
@@ -38,7 +38,7 @@ def assign_value(values, box, value):
 
     values[box] = value
     if len(value) == 1:
-        ASSIGNMENTS.append(values.copy())
+        assignments.append(values.copy())
     return values
 
 def naked_twins(values):
@@ -94,14 +94,16 @@ def naked_twins(values):
     return values
 
 def grid_values(grid):
-    """Convert grid into a dict of {square: char} with '123456789' for empties.
+    """
+    Convert grid into a dict of {square: char} with '123456789' for empties.
     Args:
         grid(string) - A grid in string form.
     Returns:
         A grid in dictionary form
             Keys: The boxes, e.g., 'A1'
             Values: The value in each box, e.g., '8'. If the box has no value,
-                    then the value will be '123456789'."""
+                    then the value will be '123456789'.
+    """
     grid = dict(zip(BOXES, grid))
     for key, value in grid.items():
         if value == '.':
@@ -109,9 +111,11 @@ def grid_values(grid):
     return grid
 
 def display(values):
-    """Display the values as a 2-D grid.
+    """
+    Display the values as a 2-D grid.
     Args:
-        values(dict): The sudoku in dictionary form"""
+        values(dict): The sudoku in dictionary form
+    """
     width = 1+max(len(values[s]) for s in BOXES)
     line = '+'.join(['-'*(width*3)]*3)
     for r in ROWS:
@@ -131,8 +135,10 @@ def eliminate(values):
     return values
 
 def only_choice(values):
-    """Determine and set the only possible value for a box in a given unit
-       if no other box has that possibility"""
+    """
+    Determine and set the only possible value for a box in a given unit
+    if no other box has that possibility
+    """
 
     for unit in UNITLIST:
         count = {}
@@ -152,6 +158,7 @@ def only_choice(values):
 
 def reduce_puzzle(values):
     "Use multiple strategies to eliminate possibilities"
+
     stalled = False
     while not stalled:
         # Check how many boxes have a determined value
@@ -207,12 +214,14 @@ def search(values):
             return solution
 
 def solve(grid):
-    """Find the solution to a Sudoku grid.
+    """
+    Find the solution to a Sudoku grid.
     Args:
         grid(string): a string representing a sudoku grid.
             Example: '2.............62....1....7...6..8...3...9...7...6..4...4....8....52.............3'
     Returns:
-        The dictionary representation of the final sudoku grid. False if no solution exists."""
+        The dictionary representation of the final sudoku grid. False if no solution exists.
+    """
 
     # Convert the string representation to a dictionary
     values = grid_values(grid)
@@ -229,7 +238,7 @@ if __name__ == '__main__':
 
     try:
         from visualize import visualize_assignments
-        visualize_assignments(ASSIGNMENTS)
+        visualize_assignments(assignments)
 
     except SystemExit:
         pass
