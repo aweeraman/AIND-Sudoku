@@ -133,18 +133,21 @@ def eliminate(values):
 def only_choice(values):
     """Determine and set the only possible value for a box in a given unit
        if no other box has that possibility"""
-    count = {}
+
     for unit in UNITLIST:
-        for i in range(1, 10):
-            count[str(i)] = 0
-        for box in unit:
-            for ch in values[box]:
-                count[ch] = count[ch] + 1
-        for box in unit:
-            if len(values[box]) != 1:
-                for ch in values[box]:
-                    if count[ch] == 1:
-                        assign_value(values, box, ch)
+        count = {}
+        for i in COLS:
+            count[i] = 0
+        for digit in COLS:
+            count = 0
+            for box in unit:
+                if digit in values[box]:
+                    count = count + 1
+            if count == 1:
+                for box in unit:
+                    if digit in values[box]:
+                        assign_value(values, box, digit)
+
     return values
 
 def reduce_puzzle(values):
