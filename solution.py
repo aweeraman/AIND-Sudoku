@@ -122,11 +122,11 @@ def display(values):
 
 def eliminate(values):
     "Eliminate single digit values from all of the peers"
+
     for box, value in values.items():
         if len(value) == 1:
             prs = PEERS[box]
             for pr in prs:
-                if len(values[pr]) != 1:
                     assign_value(values, pr, values[pr].replace(value, ''))
     return values
 
